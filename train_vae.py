@@ -37,6 +37,7 @@ parser.add_argument('-b', '--batch', default=2, type=int)
 parser.add_argument('-fp16', default=False, type=bool)
 parser.add_argument('-m', '--maxdata', default=-1, type=int, help="max dataset size")
 parser.add_argument('-lr', '--learning-rate', default=1e-4, type=float)
+parser.add_argument('--freeze-encoder', default=False, type=bool)
 
 args = parser.parse_args()
 device = torch.device(args.device)
@@ -61,6 +62,10 @@ vae, D = load_or_init_models(device)
 
 OptVAE = optim.Adam(vae.parameters(), lr=args.learning_rate, betas=(0.9, 0.5))
 OptD = optim.Adam(D.parameters(), lr=args.learning_rate, betas=(0.9, 0.5))
+
+if args.freeze_encoder:
+    for param in vae.encoder.parameters():
+        param.requires_grad = False
 
 
 for epoch in range(args.epoch):
