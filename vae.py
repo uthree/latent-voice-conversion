@@ -85,6 +85,7 @@ class Encoder(nn.Module):
         self.first_layer = nn.Conv1d(513, output_channels, 5, 1, 2)
         self.mid_layers = nn.Sequential(*[EncoderResBlock(output_channels) for _ in range(num_layers)])
         self.output_layer = nn.Conv1d(output_channels, output_channels * 2, 1, 1, 0)
+        self.apply(init_weights)
 
     def forward(self, x):
         x = self.to_spectrogram(x)[:, :, 1:]
