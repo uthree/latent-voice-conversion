@@ -93,6 +93,9 @@ for epoch in range(args.epoch):
             for logit in logits:
                 loss_adv += (logit ** 2).mean()
             loss_VAE = loss_adv + weight_feat * loss_feat + weight_kl * loss_kl + weight_mel * loss_mel
+
+        if torch.any(torch.isnan(loss_VAE)):
+            exit()
             
         scaler.scale(loss_VAE).backward()
         torch.nn.utils.clip_grad_norm_(vae.parameters(), 1.0, 2.0)
