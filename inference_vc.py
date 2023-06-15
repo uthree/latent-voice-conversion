@@ -6,6 +6,7 @@ import torchaudio
 from torchaudio.functional import resample as resample
 
 from vae import VAE
+from convertor import VoiceConvertor
 
 
 parser = argparse.ArgumentParser(description="Inference")
@@ -26,14 +27,17 @@ device = torch.device(args.device)
 vae = VAE().to(device)
 vae.load_state_dict(torch.load('./vae.pt', map_location=device))
 
+vc = VoiceConvertor().to(device)
+vc.load_state_dict(torch.load('./convertor.pt', map_location=device))
+
 if not os.path.exists(args.output):
     os.mkdir(args.output)
 
 wf, sr = torchaudio.load(args.target)
 wf = resample(wf, sr, 22050)
 wf = wf.to(device)
+spk = vc.speaker_encoder(wf)
         
-z = vae.encode(wf)
 
 for i, fname in enumerate(os.listdir(args.input)):
     print(f"Inferencing {fname}")
@@ -43,6 +47,7 @@ for i, fname in enumerate(os.listdir(args.input)):
         wf = wf.to(device)
         
         z = vae.encode(wf)
+        z = vc.decoder(vc.content_encoder(z), spk)
         wf = vae.decode(z)
 
         wf = resample(wf, 22050, sr)
