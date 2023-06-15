@@ -75,6 +75,8 @@ for epoch in range(args.epoch):
     for batch, (wave, _) in enumerate(dl):
         N = wave.shape[0]
         wave = wave.to(device)
+        amp = torch.rand(N, 1).to(device) * 0.75 + 0.25
+        wave = wave * amp
         
         OptVAE.zero_grad()
         with torch.cuda.amp.autocast(enabled=args.fp16):
