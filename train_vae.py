@@ -45,8 +45,8 @@ device = torch.device(args.device)
 scaler = torch.cuda.amp.GradScaler(enabled=args.fp16)
 
 weight_kl = 0.1
-weight_feat = 10.0
-weight_mel = 1.0
+weight_feat = 5.0
+weight_mel = 45.0
 
 
 ds = WaveFileDirectoryWithClass(
