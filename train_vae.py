@@ -45,8 +45,8 @@ device = torch.device(args.device)
 scaler = torch.cuda.amp.GradScaler(enabled=args.fp16)
 
 weight_kl = 0.1
-weight_feat = 5.0
-weight_mel = 45.0
+weight_feat = 10.0
+weight_mel = 1.0
 
 
 ds = WaveFileDirectoryWithClass(
@@ -95,7 +95,7 @@ for epoch in range(args.epoch):
             loss_VAE = loss_adv + weight_feat * loss_feat + weight_kl * loss_kl + weight_mel * loss_mel
 
         if torch.any(torch.isnan(loss_VAE)):
-            exit()
+            continue
             
         scaler.scale(loss_VAE).backward()
         torch.nn.utils.clip_grad_norm_(vae.parameters(), 1.0, 2.0)
