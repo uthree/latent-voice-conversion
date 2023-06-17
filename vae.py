@@ -167,8 +167,8 @@ class PeriodicDiscriminator(nn.Module):
                 nn.Conv2d(1, channels, (kernel_size, 1), (stride, 1), 0))
         self.layers = nn.Sequential()
         for i in range(num_stages):
-            c = channels #* (2 ** i)
-            c_next = channels #* (2 ** (i+1))
+            c = channels * (2 ** i)
+            c_next = channels * (2 ** (i+1))
             if i == (num_stages - 1):
                 self.layers.append(
                         nn.utils.spectral_norm(
@@ -181,7 +181,7 @@ class PeriodicDiscriminator(nn.Module):
                         nn.Dropout(dropout_rate))
                 self.layers.append(
                         nn.LeakyReLU(LRELU_SLOPE))
-        c = channels #* (2 ** (num_stages-1))
+        c = channels * (2 ** (num_stages-1))
         self.final_conv = nn.utils.spectral_norm(
                 nn.Conv2d(c, c, (5, 1), 1, 0)
                 )
@@ -227,7 +227,7 @@ class PeriodicDiscriminator(nn.Module):
 class MultiPeriodicDiscriminator(nn.Module):
     def __init__(self,
                  periods=[2, 3, 5, 7, 11],
-                 groups=[1, 1, 1, 1],
+                 groups=[1, 2, 4, 8],
                  channels=64,
                  kernel_size=5,
                  stride=3,
@@ -326,10 +326,10 @@ class MultiScaleDiscriminator(nn.Module):
     def __init__(
             self,
             segments=[1, 1, 1],
-            channels=[64, 64, 64, 64, 64, 64],
+            channels=[32, 64, 128, 256, 512, 1024],
             kernel_sizes=[15, 41, 41, 41, 41, 41],
             strides=[1, 2, 4, 4, 4, 4],
-            groups=[1, 1, 1, 1, 1, 1],
+            groups=[1, 1, 2, 4, 8, 16],
             pools=[1, 2, 4]
             ):
         super().__init__()
