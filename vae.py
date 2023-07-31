@@ -38,9 +38,9 @@ class ResBlock(nn.Module):
     def forward(self, x):
         for c1, c2 in zip(self.convs1, self.convs2):
             xt = F.leaky_relu(x, LRELU_SLOPE)
-            xt = c1(x)
+            xt = c1(xt)
             xt = F.leaky_relu(xt, LRELU_SLOPE)
-            xt = c2(x)
+            xt = c2(xt)
             x = xt + x
         return x
 
